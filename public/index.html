@@ -1,1 +1,331 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getränke Abrechnung – G.U.V. Voss</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;background:#f5f0e8;color:#1a1a1a;min-height:100vh;}
+header{background:#1a3a2a;color:#fff;padding:18px 28px;display:flex;align-items:center;gap:14px;}
+header h1{font-size:20px;font-weight:700;}
+header p{font-size:11px;color:#a5d6a7;letter-spacing:2px;text-transform:uppercase;}
+.container{max-width:860px;margin:0 auto;padding:28px 16px;}
+.card{background:#fff;border-radius:14px;padding:22px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.07);}
+.card h2{font-size:14px;font-weight:700;color:#1a3a2a;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #e8f5e9;display:flex;align-items:center;gap:8px;}
+.step{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#1a3a2a;color:#fff;border-radius:50%;font-size:11px;font-weight:700;flex-shrink:0;}
+.upload-zone{border:2px dashed #c8e6c9;border-radius:10px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;background:#f0fdf4;}
+.upload-zone:hover{border-color:#2d7a4f;background:#e8f5e9;}
+.upload-zone input{display:none;}
+.upload-zone .icon{font-size:44px;margin-bottom:10px;}
+.upload-zone p{color:#666;font-size:14px;}
+.upload-zone img{max-width:100%;max-height:260px;border-radius:8px;margin-top:10px;}
+.btn-primary{padding:11px 22px;border:none;border-radius:10px;cursor:pointer;font-family:Georgia,serif;font-size:14px;font-weight:700;background:#1a3a2a;color:#fff;width:100%;margin-top:12px;}
+.btn-primary:hover{background:#2d7a4f;}
+.btn-primary:disabled{background:#ccc;cursor:not-allowed;}
+.btn-accent{padding:14px;border:none;border-radius:10px;cursor:pointer;font-family:Georgia,serif;font-size:16px;font-weight:700;background:#16a34a;color:#fff;width:100%;margin-top:12px;}
+.btn-sm{padding:7px 14px;font-size:12px;background:#e8f5e9;color:#1a3a2a;border:1px solid #c8e6c9;border-radius:8px;cursor:pointer;margin-top:10px;font-family:Georgia,serif;}
+.pos-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin-bottom:6px;background:#f9fafb;font-size:13px;}
+.pos-row select{padding:4px 8px;border-radius:6px;border:1px solid #c8e6c9;font-size:12px;}
+.partei-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:#e8f5e9;border:1px solid #c8e6c9;border-radius:20px;margin:3px;}
+.partei-chip input{border:none;background:none;font-size:13px;font-weight:700;color:#1a3a2a;outline:none;}
+.partei-chip button{border:none;background:none;cursor:pointer;color:#888;font-size:14px;padding:0;}
+.leergut-block{background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:12px;}
+.leergut-block-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.kisten-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+.kiste{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border:1.5px solid #d1fae5;border-radius:8px;background:#f0fdf4;cursor:pointer;font-size:10px;color:#1a3a2a;min-width:58px;text-align:center;transition:all .15s;}
+.kiste:hover{border-color:#2d7a4f;background:#d1fae5;}
+.kiste.assigned{background:#1a3a2a;color:#fff;border-color:#1a3a2a;}
+.kiste .icon{font-size:18px;}
+.picker{display:none;margin-top:8px;padding:8px;background:#fff;border-radius:8px;border:1px solid #e8f5e9;}
+.picker-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.picker-btn{padding:5px 12px;border-radius:8px;border:1px solid #c8e6c9;background:#e8f5e9;cursor:pointer;font-size:12px;color:#1a3a2a;font-family:Georgia,serif;}
+.picker-btn.danger{border-color:#fca5a5;background:#fee2e2;color:#dc2626;}
+.result-table{width:100%;border-collapse:collapse;}
+.result-table th{background:#1a3a2a;color:#fff;padding:10px 14px;text-align:left;font-size:13px;}
+.result-table td{padding:10px 14px;border-bottom:1px solid #e8f5e9;font-size:13px;}
+.result-table .total-row td{border-top:3px solid #1a3a2a;font-weight:700;font-size:15px;background:#f0fdf4;}
+.summary-box{background:#1a3a2a;color:#fff;border-radius:14px;padding:22px;margin-top:20px;}
+.summary-box h3{color:#a5d6a7;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.sum-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sum-row.total{border:none;border-top:2px solid rgba(255,255,255,0.3);margin-top:8px;padding-top:14px;}
+.sum-row .amount{font-size:18px;font-weight:700;color:#4ade80;}
+.sum-row.total .amount{font-size:24px;}
+.share-btns{display:flex;gap:10px;margin-top:14px;}
+.share-btn{flex:1;padding:11px;border-radius:10px;border:1px solid #c8e6c9;background:#e8f5e9;cursor:pointer;font-family:Georgia,serif;font-size:13px;font-weight:700;color:#1a3a2a;}
+.info{background:#dbeafe;color:#1e40af;padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:12px;}
+.error{background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:8px;margin-top:10px;font-size:13px;}
+.debug{background:#111;color:#4ade80;padding:10px;border-radius:8px;margin-top:8px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:160px;overflow-y:auto;}
+.hidden{display:none;}
+.progress.ok{font-size:12px;font-weight:700;color:#16a34a;}
+.progress.warn{font-size:12px;font-weight:700;color:#dc2626;}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:36px;">🍺</div>
+  <div>
+    <p>G.U.V. Getränke Voss · Münster-Wolbeck</p>
+    <h1>Nachbarschafts-Abrechnung</h1>
+  </div>
+</header>
+<div class="container">
 
+  <div class="card">
+    <h2><span class="step">1</span> Rechnung hochladen & analysieren</h2>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <div class="icon">📄</div>
+      <p>Foto oder PDF der Rechnung hochladen</p>
+      <p style="font-size:12px;margin-top:4px;color:#999;">JPG, PNG oder PDF</p>
+      <input type="file" id="fileInput" accept="image/*,application/pdf" onchange="handleFile(event)">
+      <div id="previewContainer"></div>
+    </div>
+    <button class="btn-primary" id="analyzeBtn" onclick="analyzeInvoice()" disabled>🔍 Rechnung analysieren</button>
+    <div id="statusMsg" class="hidden" style="margin-top:10px;text-align:center;font-size:13px;color:#666;"></div>
+    <div id="debugBox" class="debug hidden"></div>
+    <div id="errBox" class="error hidden"></div>
+  </div>
+
+  <div id="mainSteps" class="hidden">
+    <div class="card">
+      <h2><span class="step">2</span> Parteien prüfen</h2>
+      <div id="parteiGrid" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      <button class="btn-sm" onclick="addPartei()">+ Partei hinzufügen</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">3</span> Positionen zuordnen</h2>
+      <div class="info">Leergut und Lieferkosten werden separat behandelt.</div>
+      <div id="zuordnungList"></div>
+    </div>
+
+    <div class="card hidden" id="leergutCard">
+      <h2><span class="step">4</span> Leergut-Rücknahme verteilen</h2>
+      <div class="info">Kiste anklicken → Partei zuweisen.</div>
+      <div id="leergutBody"></div>
+    </div>
+
+    <button class="btn-accent" onclick="berechne()">💶 Abrechnung berechnen</button>
+  </div>
+
+  <div id="ergebnis" class="hidden">
+    <div class="card">
+      <h2>✓ Abrechnung (Brutto inkl. MwSt.)</h2>
+      <div id="rechnungsInfo" style="font-size:12px;color:#666;margin-bottom:12px;"></div>
+      <table class="result-table">
+        <thead><tr><th>Partei</th><th>Getränke</th><th>Leergut</th><th>Lieferung</th><th>Zu zahlen</th></tr></thead>
+        <tbody id="abrechnungBody"></tbody>
+      </table>
+    </div>
+    <div class="summary-box">
+      <h3>📋 Zusammenfassung</h3>
+      <div id="summaryRows"></div>
+    </div>
+    <div class="share-btns">
+      <button class="share-btn" onclick="shareWA()">💬 WhatsApp</button>
+      <button class="share-btn" onclick="window.print()">🖨️ Drucken</button>
+    </div>
+  </div>
+
+</div>
+<script>
+let imgB64=null,imgType=null,positionen=[],leergutPos=[],parteien=[],zuordnungen={},leergutZuord={},rechnungsBetrag=0,lieferNetto=0;
+const fmt=n=>Number(n).toFixed(2).replace('.',',')+' €';
+const show=(id,txt)=>{const el=document.getElementById(id);el.classList.remove('hidden');if(txt!==undefined)el.textContent=txt;};
+const hide=id=>document.getElementById(id).classList.add('hidden');
+
+function handleFile(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const res=ev.target.result;
+    imgB64=res.split(',')[1];imgType=f.type;
+    const pre=document.getElementById('previewContainer');
+    if(f.type.startsWith('image/'))
+      pre.innerHTML=`<img src="${res}" style="max-width:100%;max-height:260px;border-radius:8px;margin-top:10px;">`;
+    else pre.innerHTML=`<p style="margin-top:10px;color:#2d7a4f;font-weight:700;">✓ ${f.name}</p>`;
+    const btn=document.getElementById('analyzeBtn');
+    btn.disabled=false;btn.style.background='#1a3a2a';
+  };
+  r.readAsDataURL(f);
+}
+
+async function analyzeInvoice(){
+  const btn=document.getElementById('analyzeBtn');
+  btn.disabled=true;
+  show('statusMsg','⏳ KI analysiert die Rechnung...');
+  hide('errBox');hide('debugBox');
+
+  const prompt=`Analysiere diese Getränkerechnung. Antworte NUR mit reinem JSON ohne Backticks.
+
+Alle Einzelpreise auf der Rechnung sind NETTOPREISE – gib sie als Netto zurück.
+rechnungsBetrag = der finale BRUTTO-Gesamtbetrag ganz unten auf der Rechnung.
+Erkenne Parteiengruppen nach Hausnummern/Namen.
+Typen: getraenk (Getränk+Pfand, positiv, Partei zugeordnet), leergut (Rücknahme negativ, partei:null), lieferung (Zustellung positiv, partei:null).
+
+{"rechnungsBetrag":119.21,"parteien":["Feldhege Nr 5","Mangels Nr 10"],"positionen":[{"bezeichnung":"Tegernseer Hell","menge":1,"einzelpreis":20.59,"gesamtpreis":20.59,"typ":"getraenk","partei":"Feldhege Nr 5"},{"bezeichnung":"Pfandkiste 12er","menge":7,"einzelpreis":-3.30,"gesamtpreis":-23.10,"typ":"leergut","partei":null},{"bezeichnung":"Zustellung","menge":1,"einzelpreis":8.40,"gesamtpreis":8.40,"typ":"lieferung","partei":null}]}`;
+
+  try{
+    const resp=await fetch('/api/analyze',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:2000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:imgType,data:imgB64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+    const data=await resp.json();
+    document.getElementById('debugBox').textContent='Status: '+resp.status+'\n'+JSON.stringify(data).substring(0,400);
+    show('debugBox');
+    if(!data.content||!data.content[0]) throw new Error('Keine Antwort: '+JSON.stringify(data));
+    let txt=data.content[0].text.replace(/```json|```/g,'').trim();
+    const s=txt.indexOf('{'),e=txt.lastIndexOf('}');
+    if(s<0||e<0) throw new Error('Kein JSON: '+txt.substring(0,200));
+    const res=JSON.parse(txt.substring(s,e+1));
+
+    rechnungsBetrag=res.rechnungsBetrag||0;
+    positionen=res.positionen||[];
+    parteien=(res.parteien||[]).map(n=>({name:n}));
+    leergutPos=positionen.filter(p=>p.typ==='leergut');
+    lieferNetto=positionen.filter(p=>p.typ==='lieferung').reduce((s,p)=>s+Math.abs(p.gesamtpreis),0);
+    positionen.forEach((p,i)=>{
+      if(p.partei&&p.typ!=='leergut'&&p.typ!=='lieferung'){
+        const pi=parteien.findIndex(pt=>pt.name===p.partei);
+        if(pi>=0)zuordnungen[i]=pi;
+      }
+    });
+    renderParteien();renderZuordnung();renderLeergut();
+    show('mainSteps');hide('statusMsg');
+  }catch(err){
+    show('errBox','Fehler: '+err.message);hide('statusMsg');
+    btn.disabled=false;
+  }
+}
+
+function renderParteien(){
+  document.getElementById('parteiGrid').innerHTML=parteien.map((p,i)=>`
+    <div class="partei-chip">
+      <input value="${p.name}" style="width:${Math.max(80,p.name.length*8)}px"
+        onchange="parteien[${i}].name=this.value;renderZuordnung();renderLeergut();">
+      <button onclick="parteien.splice(${i},1);renderParteien();renderZuordnung();renderLeergut();">×</button>
+    </div>`).join('');
+}
+function addPartei(){parteien.push({name:'Neue Partei'});renderParteien();renderZuordnung();renderLeergut();}
+
+function renderZuordnung(){
+  const rel=positionen.map((p,i)=>({p,i})).filter(({p})=>p.typ!=='leergut'&&p.typ!=='lieferung');
+  document.getElementById('zuordnungList').innerHTML=rel.map(({p,i})=>{
+    const sel=zuordnungen[i]!==undefined?zuordnungen[i]:-1;
+    const opts=parteien.map((pt,pi)=>`<option value="${pi}"${pi===sel?' selected':''}>${pt.name}</option>`).join('');
+    return `<div class="pos-row">
+      <span style="flex:1;">${p.typ==='pfand'?'📦':'🍺'} ${p.bezeichnung}${p.menge>1?' ('+p.menge+'×)':''} – ${fmt(Math.abs(p.gesamtpreis))}</span>
+      <select onchange="zuordnungen[${i}]=parseInt(this.value)">
+        <option value="-1">– wählen –</option>${opts}
+      </select>
+    </div>`;
+  }).join('');
+}
+
+function renderLeergut(){
+  if(!leergutPos.length){document.getElementById('leergutCard').classList.add('hidden');return;}
+  document.getElementById('leergutCard').classList.remove('hidden');
+  document.getElementById('leergutBody').innerHTML=leergutPos.map((lg,li)=>{
+    const tot=Math.abs(lg.menge);
+    const kisten=Array.from({length:tot},(_,ki)=>{
+      const asgn=leergutZuord[li]&&leergutZuord[li][ki]!==undefined?leergutZuord[li][ki]:-1;
+      const nm=asgn>=0&&parteien[asgn]?parteien[asgn].name:'frei';
+      return `<div class="kiste${asgn>=0?' assigned':''}" id="k_${li}_${ki}" onclick="kistenClick(${li},${ki})">
+        <span class="icon">📦</span><span>${nm}</span></div>`;
+    }).join('');
+    const done=Array.from({length:tot},(_,ki)=>leergutZuord[li]&&leergutZuord[li][ki]>=0?1:0).reduce((a,b)=>a+b,0);
+    return `<div class="leergut-block">
+      <div class="leergut-block-header">
+        <strong style="font-size:13px;">♻️ ${lg.bezeichnung} – ${fmt(Math.abs(lg.einzelpreis))}/Kiste · ${tot} Kisten</strong>
+        <span class="progress ${done===tot?'ok':'warn'}" id="lgprog_${li}">${done===tot?'✓ alle':done+'/'+tot+' verteilt'}</span>
+      </div>
+      <div class="kisten-wrap">${kisten}</div>
+      <div class="picker" id="picker_${li}">
+        <div style="font-size:12px;color:#666;margin-bottom:4px;">Zuweisen an:</div>
+        <div class="picker-btns">
+          ${parteien.map((pt,pi)=>`<button class="picker-btn" onclick="assignKiste(${li},currentKi,${pi})">${pt.name}</button>`).join('')}
+          <button class="picker-btn danger" onclick="assignKiste(${li},currentKi,-1)">✕ Freigeben</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let currentLi=-1,currentKi=-1;
+function kistenClick(li,ki){
+  currentLi=li;currentKi=ki;
+  leergutPos.forEach((_,i)=>{const p=document.getElementById('picker_'+i);if(p)p.style.display='none';});
+  const p=document.getElementById('picker_'+li);if(p)p.style.display='block';
+}
+function assignKiste(li,ki,pi){
+  if(!leergutZuord[li])leergutZuord[li]={};
+  if(pi===-1)delete leergutZuord[li][ki];else leergutZuord[li][ki]=pi;
+  document.getElementById('picker_'+li).style.display='none';
+  renderLeergut();
+}
+
+function berechne(){
+  const aktivSet=new Set();
+  positionen.forEach((p,i)=>{if(zuordnungen[i]>=0&&p.typ!=='leergut'&&p.typ!=='lieferung')aktivSet.add(zuordnungen[i]);});
+  const nAktiv=aktivSet.size;
+  const lieferProP=nAktiv>0?lieferNetto/nAktiv:0;
+  const nettoP=parteien.map((_,pi)=>positionen.reduce((s,p,i)=>{
+    if(zuordnungen[i]===pi&&p.typ!=='leergut'&&p.typ!=='lieferung')return s+Math.abs(p.gesamtpreis);return s;},0));
+  const leergutP=parteien.map((_,pi)=>leergutPos.reduce((s,lg,li)=>{
+    const tot=Math.abs(lg.menge);
+    const cnt=Array.from({length:tot},(_,ki)=>leergutZuord[li]&&leergutZuord[li][ki]===pi?1:0).reduce((a,b)=>a+b,0);
+    return s+cnt*Math.abs(lg.einzelpreis);},0));
+  const lieferP=parteien.map((_,pi)=>aktivSet.has(pi)?lieferProP:0);
+  const leergutGes=leergutPos.reduce((s,lg)=>s+Math.abs(lg.gesamtpreis),0);
+  const nettoSumme=nettoP.reduce((a,b)=>a+b,0)+lieferNetto-leergutGes;
+  const bf=nettoSumme>0?rechnungsBetrag/nettoSumme:1;
+
+  const rows=parteien.map((p,pi)=>{
+    if(!nettoP[pi]&&!leergutP[pi])return null;
+    const g=Math.round(nettoP[pi]*bf*100)/100;
+    const l=Math.round(leergutP[pi]*bf*100)/100;
+    const d=Math.round(lieferP[pi]*bf*100)/100;
+    return{name:p.name,g,l,d,zahlen:Math.round((g-l+d)*100)/100};
+  }).filter(Boolean);
+
+  const total=Math.round(rows.reduce((s,r)=>s+r.zahlen,0)*100)/100;
+  document.getElementById('rechnungsInfo').textContent=`Rechnungsbetrag: ${fmt(rechnungsBetrag)} (Brutto inkl. MwSt.)`;
+  document.getElementById('abrechnungBody').innerHTML=rows.map(r=>`
+    <tr>
+      <td><strong>${r.name}</strong></td>
+      <td>${fmt(r.g)}</td>
+      <td style="color:#dc2626;">−${fmt(r.l)}</td>
+      <td>${fmt(r.d)}</td>
+      <td style="font-weight:700;">${fmt(r.zahlen)}</td>
+    </tr>`).join('')+`
+    <tr class="total-row">
+      <td>Gesamt</td>
+      <td>${fmt(rows.reduce((s,r)=>s+r.g,0))}</td>
+      <td style="color:#dc2626;">−${fmt(rows.reduce((s,r)=>s+r.l,0))}</td>
+      <td>${fmt(rows.reduce((s,r)=>s+r.d,0))}</td>
+      <td>${fmt(total)}</td>
+    </tr>`;
+  document.getElementById('summaryRows').innerHTML=rows.map(r=>`
+    <div class="sum-row"><span>🏠 ${r.name}</span><span class="amount">${fmt(r.zahlen)}</span></div>`).join('')+`
+    <div class="sum-row total"><span style="font-size:16px;">Gesamt</span><span class="amount">${fmt(total)}</span></div>`;
+  show('ergebnis');
+  document.getElementById('ergebnis').scrollIntoView({behavior:'smooth'});
+}
+
+function shareWA(){
+  let txt='Getraenke Abrechnung\n\n';
+  document.querySelectorAll('#summaryRows .sum-row').forEach(r=>{
+    const spans=r.querySelectorAll('span');
+    if(spans.length===2)txt+=spans[0].textContent.trim()+': '+spans[1].textContent.trim()+'\n';
+  });
+  window.location.href='https://wa.me/?text='+encodeURIComponent(txt);
+}
+</script>
+</body>
+</html>
